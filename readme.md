@@ -24,6 +24,6 @@ print(c)
 d = tf.constant(value=2.0,shape=(2,2),dtype='float32)
 ```
 
-![运行结果](./1.png)
+![运行结果](./img/1.png)
 
 从运行结果中可以看出，整型一维张量的`dtype`是`int32`，小数
