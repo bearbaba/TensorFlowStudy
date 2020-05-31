@@ -1,10 +1,18 @@
 import tensorflow as tf
-a = tf.constant(value=1)
-print(a)
-b = tf.constant(value=1.0)
-print(b)
-c = tf.constant(value=1,shape=[2])
-print(c)
-d = tf.constant(value=2.0,shape=(2,2),dtype='float32')
-print(d)
 
+
+def creat_tensor():
+    import tensorflow as tf
+    a = tf.constant(3, dtype=tf.int32, shape=(2, 3))
+    print(a)
+
+
+def change_tensor_dtype():
+    a = tf.constant(12, dtype=tf.int32, shape=(2, 3))
+    a = tf.cast(a, dtype=tf.float32)
+    print(a)
+
+
+if __name__ == '__main__':
+    creat_tensor()
+    change_tensor_dtype()
