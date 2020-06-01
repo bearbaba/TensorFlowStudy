@@ -44,13 +44,24 @@ def get_tensor_property():
 
 
 def add_tensor_ndim():
-    a = tf.constant([2, 3])
-    b = tf.constant([1, 2])
-    print("a_ndim={},\nb_ndim={}".format(tf.rank(a), tf.rank(b)))
-    print(b)
-    b = tf.reshape(b, (1, 2))
-    b = tf.expand_dims(a, axis=1)
-    print(b)
+    a = tf.constant([[1, 2], [3, 4]])
+    print(tf.shape(a))
+    a = tf.expand_dims(a, axis=0)
+    print(a)
+
+
+def sub_tensor_ndim():
+    a = tf.constant(1, shape=(1, 2, 3, 1, 1, 4))
+    print(a.shape)
+    b = tf.squeeze(a)
+    c = tf.squeeze(a, [0, 3])
+    print("b_shape={},c_shape={}".format(b.shape, c.shape))
+
+
+def swap_tensor_axis():
+    a = tf.constant(1, shape=(1, 2, 3))
+    a = tf.transpose(a, perm=[1, 0, 2])
+    print(a)
 
 
 def change_tensor_shape():
@@ -65,4 +76,6 @@ if __name__ == '__main__':
     # type_to_tensor()
     # get_tensor_property()
     # change_tensor_shape()
-    add_tensor_ndim()
+    # add_tensor_ndim()
+    # sub_tensor_ndim()
+    swap_tensor_axis()
