@@ -107,6 +107,24 @@ def unstack_tensor():
     print(b)
 
 
+def get_tensor_data():
+    a = tf.constant([[[1, 2, 3],
+                      [4, 5, 6]],
+                     [[1, 2, 3],
+                      [4, 5, 6]]])
+    # print(a[0, 1, 1])
+    # print(a[0])
+    #
+    # print(a[0][0][1:])
+    # print(a[0][0:2][0:2])
+    # print(a[0, 0:2, 0:2])
+
+    a = tf.range(12, delta=2)
+    # print(tf.gather(a, [0, 2, 3]))
+    a = tf.reshape(a,(2,3))
+    print(tf.gather_nd(a, [[0,1],[1,1]]))
+
+
 if __name__ == '__main__':
     # creat_tensor()
     # change_tensor_dtype()
@@ -119,4 +137,5 @@ if __name__ == '__main__':
     # concat_tensors()
     # split_tensor()
     # stack_tensor()
-    unstack_tensor()
+    # unstack_tensor()
+    get_tensor_data()

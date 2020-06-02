@@ -296,10 +296,127 @@ print(a)
 
 #### 拼接张量
 
-将多个张量在某维度上拼接可以使用`tf.concat(tensor, axis)`函数，`axis`指定在哪个轴上进行拼接。
+将多个张量在某维度上拼接可以使用`tf.concat(tensors, axis)`函数，`tensors`是包含要被拼接的张量的列表，`axis`指定在哪个轴上进行拼接。
 
 拼接张量是将多个张量在某个维度上进行合并，并不会产生新的维度。
 
 例：
 
 ```python
+# 指定在0轴上拼接
+a = tf.constant(1,shape=(1,2))
+b = tf.constant(2,shape=(1,2))
+c = tf.concat([a,b],axis=0)
+print(c)
+
+# 指定在1轴上拼接
+a = tf.constant(1,shape=(1,2))
+b = tf.constant(2,shape=(1,2))
+c = tf.concat([a,b],axis=1)
+print(c)
+```
+
+![运行结果](./img/18.png)
+
+#### 分割张量
+
+分割张量可以用`tf.split(value, num_or_size_splits,axis=0)`函数，`values`是待分割的变量，`num_or_size_splits`是分割方案，分割方案参数可以是一个数值，表示等长分割，数值是分割的份数，也可以是一个列表，表示不等长分割，列表中是切割后每份的长度。例：
+
+```python
+a = tf.constant(1, shape=(2, 4))
+print("在0轴上分割，每一份是2时：\n", tf.split(a, num_or_size_splits=2, axis=0))
+print("在1轴上分割，分割份数之比为1：2：1，", tf.split(a, [1, 2, 1], 1))
+```
+
+![运行结果](./img/19.png)
+
+#### 堆叠张量
+
+堆叠张量使用`tf.stack(values, axis)`函数，`values`是要堆叠的多个张量，`axis`指定插入新维度的位置。
+
+在合并张量时，会创建一个新的维度。例：
+
+```python
+a = tf.constant([1, 2, 3])
+b = tf.constant([4, 5, 6])
+
+# 在轴为0上进行拼接
+print(tf.stack([a, b], axis=0))
+
+# 在轴为1上进行拼接
+print(tf.stack([a, b], axis=1))
+```
+
+![运行结果](./img/20.png)
+
+#### 分解张量
+
+分解张量是张量堆叠的逆运算，使用`tf.unstack(values, axis)`函数，
+
+张量会被分解为多个张量，分解后得到的每个张量和原来的张量相比，维度都会少一维。
+
+例：
+
+```python
+a = tf.reshape(tf.range(6), shape=(2, 3))
+b = tf.unstack(a, axis=0)
+print(b)
+```
+
+![运行结果](./img/21.png)
+
+### 部分采样
+
+#### 索引和切片
+
+张量也含有类似于列表的索引的用法，例如，对于一个一维张量提取它的数据就可以用类似`a[0]`来提取，对于二维张量可以通过`a[0, 0]`或者`a[0][0]`来提取第一行第一列的数据。
+
+```python
+a = tf.constant([[[1, 2, 3],
+          	[4, 5, 6]],
+         	[[1, 2, 3],
+          	[4, 5, 6]]])
+print(a[0, 1, 1])
+print(a[0])
+```
+
+![运行结果](./img/22.png)
+
+切片的用法也与列表类似，例：
+
+```python
+print(a[0][0][1:])
+print(a[0][0:2][0:2])
+print(a[0, 0:2, 0:2])
+```
+
+注意，`a[0][0:2][0:2]`这种切片方式是错误的，`a[0, 0:2, 0:2]`才能得到我们想要的切片的数据，运行结果如下：
+
+![运行结果](./img/21.png)
+
+如结果所示，`a[0][0:2][0:2]`只对轴为1的维度进行了切片。
+
+#### 数据提取
+
+`gather(params, indices)`函数可以用一个索引列表，将给定张量中对应索引值的元素提取出来，参数`params`代表输入的张量，`indices`是索引值列表。
+
+例，从一维张量中提取索引分别为0，2，3的元素：
+
+```python
+a = tf.range(12, delta=2)
+print(tf.gather(a, [0, 2, 3]))
+```
+
+![运行结果](./img/24.png)
+
+`tf.gather()`一次只能对一个维度进行数据提取，可以传入`axis`参数指定要提取哪一维度。
+
+`tf.gather_nd()`函数可以同时对多个维度进行索引，通过指定坐标来采样多个点，
+
+```python
+a = tf.range(12, delta=2)
+a = tf.reshape(a,(2,3))
+print(tf.gather_nd(a, [[0,1],[1,1]]))
+```
+
+![运行结果](./img/25.png)
