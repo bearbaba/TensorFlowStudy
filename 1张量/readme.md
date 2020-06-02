@@ -204,3 +204,102 @@ print(tf.rank(a))
 ```
 
 ![示例图片](./img/12.png)
+
+## 张量相关操作
+
+多维张量在物理上以一维的方式连续存储，通过定义维度和形状，在逻辑上把它理解为多维张量。（对于多维数组也同样适用）
+
+### 维度变换
+
+#### 改变张量形状
+
+使用`tf.reshape`改变张量的形状，语法格式：
+
+```python
+tf.reshape(tensor,shape)
+```
+
+例，将一维张量转换成三维张量：
+
+```python
+a = tf.range(24)
+print(a)
+print(tf.reshape(a, [2, 3, 4]))
+```
+
+![示例图片](./img/13.png)
+
+#### 多维张量的轴
+
+多维张量的维度表示多维张量的轴（`axis`）。
+
+![示例图片](./img/14.png)
+
+张量的轴带有索引值，从维度最高到最低，使用数字0作为轴索引的开始，（可以理解为张量最外层到最内层的顺序）。也可以使用负数作为倒数的索引，-1表示索引值最大的轴，这一点与Python的列表一致。
+
+#### 增加维度
+
+使用`tf.expand_dims(input, axis)`增加张量维度，语法格式：
+
+```python
+tf.expand_dims(input, axis)
+```
+
+示例，现有一个`shape`为（2，2）的张量，为它在`axis=0`方向上添加一个维度：
+
+```python
+a = tf.constant([[1,2],[3,4]])
+print(tf.shape(a))
+a = tf.expand_dims(a, axis=0)
+print(a)
+```
+
+![运行结果](./img/15.png)
+
+需要注意的是，`tf.expand_dims()`必须要明确指定`axis`的值，指定顶哪个轴就在原张量基础上增加一个指定轴。如果上述代码指定`axis=1`，那么a的`shape`就会是(2, 1, 2)。
+
+#### 删除维度
+
+删除维度用`tf.squeeze()`函数，该函数语法格式：
+
+```python
+tf.squeeze(input, axis=None)
+```
+
+该函数只能删除长度为1的维度，可以指定`axis`，如果明确不指定`axis`，会删除所有长度为1的维度，可以使用列表来指定多个要删除的维度。
+
+例，原张量`shape`为(1, 2 , 3, 1,  1, 4)，如果分别指定删除全部长度为1的维度和，代码为：
+
+```python
+a = tf.constant(1, shape=(1, 2, 3, 1, 1, 4))
+print(a.shape)
+b = tf.squeeze(a)
+c = tf.squeeze(a, [0, 3])
+print("b_shape={},c_shape={}".format(b.shape, c.shape))
+```
+
+![运行结果](./img/16.png)
+
+#### 交换维度
+
+交换维度使用`tf.transpose(a, perm)`函数，`perm`指定维度的顺序，例如原本形状为（1，2，3）的张量维度顺序是（0，1，2），现在使用`tf.transpose()`将索引为0的轴和索引为1的轴进行交换：
+
+```python
+a = tf.constant(1, shape=(1, 2, 3))
+a = tf.transpose(a, perm=[1, 0, 2])
+print(a)
+```
+
+![运行结果](./img/17.png)
+
+运行结果显示原先张量`shape`为(1, 2, 3)，现在形状为(2, 1, 3)。
+
+#### 拼接张量
+
+将多个张量在某维度上拼接可以使用`tf.concat(tensor, axis)`函数，`axis`指定在哪个轴上进行拼接。
+
+拼接张量是将多个张量在某个维度上进行合并，并不会产生新的维度。
+
+例：
+
+```python

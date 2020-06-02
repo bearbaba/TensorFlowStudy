@@ -64,10 +64,47 @@ def swap_tensor_axis():
     print(a)
 
 
+def concat_tensors():
+    # 指定在0轴上拼接
+    a = tf.constant(1, shape=(1, 2))
+    b = tf.constant(2, shape=(1, 2))
+    c = tf.concat([a, b], axis=0)
+    print(c)
+
+    # 指定在1轴上拼接
+    a = tf.constant(1, shape=(1, 2))
+    b = tf.constant(2, shape=(1, 2))
+    c = tf.concat([a, b], axis=1)
+    print(c)
+
+
+def split_tensor():
+    a = tf.constant(1, shape=(2, 4))
+    print("在0轴上分割，每一份是2时：\n", tf.split(a, num_or_size_splits=2, axis=0))
+    print("在1轴上分割，分割份数之比为1：2：1，", tf.split(a, [1, 2, 1], 1))
+
+
 def change_tensor_shape():
     a = tf.range(24)
     print(a)
     print(tf.reshape(a, [2, 3, 4]))
+
+
+def stack_tensor():
+    a = tf.constant([1, 2, 3])
+    b = tf.constant([4, 5, 6])
+
+    # 在轴为0上进行拼接
+    print(tf.stack([a, b], axis=0))
+
+    # 在轴为1上进行拼接
+    print(tf.stack([a, b], axis=1))
+
+
+def unstack_tensor():
+    a = tf.reshape(tf.range(6), shape=(2, 3))
+    b = tf.unstack(a, axis=0)
+    print(b)
 
 
 if __name__ == '__main__':
@@ -78,4 +115,8 @@ if __name__ == '__main__':
     # change_tensor_shape()
     # add_tensor_ndim()
     # sub_tensor_ndim()
-    swap_tensor_axis()
+    # swap_tensor_axis()
+    # concat_tensors()
+    # split_tensor()
+    # stack_tensor()
+    unstack_tensor()
