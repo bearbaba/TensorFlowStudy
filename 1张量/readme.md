@@ -420,3 +420,16 @@ print(tf.gather_nd(a, [[0,1],[1,1]]))
 ```
 
 ![运行结果](./img/25.png)
+
+### 张量运算
+
+ #### 加减乘除四则运算
+
+|算术操作|描述|
+|:-:|:-:|
+|`tf.add(x,y)`|将x和y逐元素相加|
+|`tf.subtract(x,y)`|将x和y逐元素相减|
+|`tf.multiply(x,y)`|将x和y逐元素相乘|
+|`tf.divide(x,y)`|将x和y逐元素相除|
+|`tf.math.mod(x,y)`|将x逐元素求余|
+

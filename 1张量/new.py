@@ -129,11 +129,11 @@ def math_operations():
     # 逐元素相加
     a = tf.constant([1, 2, 3])
     b = tf.constant([4, 5, 6])
-    c = tf.add(a,b)
+    c = tf.add(a, b)
     print(c)
 
     # 逐元素相减
-    d = tf.subtract(b,a)
+    d = tf.subtract(b, a)
     print(d)
 
     # 逐元素相乘
@@ -148,12 +148,25 @@ def math_operations():
     g = tf.math.mod(a, b)
     print(g)
 
-    print(a-b)
-    print(a*b)
-    print(a/b)
-    print(a+b)
-    print(a%b)
-    print(a//b)
+    print(a - b)
+    print(a * b)
+    print(a / b)
+    print(a + b)
+    print(a % b)
+    print(a // b)
+
+
+def math_operations2():
+    a = tf.reshape(tf.range(6), shape=(2, 3))
+    print(tf.pow(a, 2))
+    print(a ** 2)
+    print(tf.square(a))
+
+    print(tf.sqrt(tf.cast(a, dtype=tf.float32)))
+    print(tf.cast(a, dtype=tf.float32) ** (1 / 2))
+
+    print(tf.math.log(tf.cast(a, dtype=tf.float32)))
+    print(tf.exp(tf.cast(a,dtype=tf.float32)))
 
 
 if __name__ == '__main__':
@@ -170,4 +183,5 @@ if __name__ == '__main__':
     # stack_tensor()
     # unstack_tensor()
     # get_tensor_data()
-    math_operations()
+    # math_operations()
+    math_operations2()
