@@ -121,8 +121,39 @@ def get_tensor_data():
 
     a = tf.range(12, delta=2)
     # print(tf.gather(a, [0, 2, 3]))
-    a = tf.reshape(a,(2,3))
-    print(tf.gather_nd(a, [[0,1],[1,1]]))
+    a = tf.reshape(a, (2, 3))
+    print(tf.gather_nd(a, [[0, 1], [1, 1]]))
+
+
+def math_operations():
+    # 逐元素相加
+    a = tf.constant([1, 2, 3])
+    b = tf.constant([4, 5, 6])
+    c = tf.add(a,b)
+    print(c)
+
+    # 逐元素相减
+    d = tf.subtract(b,a)
+    print(d)
+
+    # 逐元素相乘
+    e = tf.multiply(a, b)
+    print(e)
+
+    # 逐元素相除
+    f = tf.divide(a, b)
+    print(f)
+
+    # 逐元素求余
+    g = tf.math.mod(a, b)
+    print(g)
+
+    print(a-b)
+    print(a*b)
+    print(a/b)
+    print(a+b)
+    print(a%b)
+    print(a//b)
 
 
 if __name__ == '__main__':
@@ -138,4 +169,5 @@ if __name__ == '__main__':
     # split_tensor()
     # stack_tensor()
     # unstack_tensor()
-    get_tensor_data()
+    # get_tensor_data()
+    math_operations()
