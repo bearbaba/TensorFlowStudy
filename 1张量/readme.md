@@ -421,9 +421,9 @@ print(tf.gather_nd(a, [[0,1],[1,1]]))
 
 ![运行结果](./img/25.png)
 
-### 张量运算
+## 张量运算
 
- #### 加减乘除四则运算
+ ### 加减乘除四则运算
 
 |算术操作|描述|
 |:-:|:-:|
@@ -432,4 +432,116 @@ print(tf.gather_nd(a, [[0,1],[1,1]]))
 |`tf.multiply(x,y)`|将x和y逐元素相乘|
 |`tf.divide(x,y)`|将x和y逐元素相除|
 |`tf.math.mod(x,y)`|将x逐元素求余|
+
+逐元素操作是指把x中的每一个元素与y中的每一个元素逐个地进行运算，但是实际上是可以用数学符号`+-/*%`去代替的。例：
+
+```python
+# 逐元素相加
+a = tf.constant([1, 2, 3])
+b = tf.constant([4, 5, 6])
+c = tf.add(a, b)
+print(c)
+
+# 逐元素相减
+d = tf.subtract(b, a)
+print(d)
+
+# 逐元素相乘
+e = tf.multiply(a, b)
+print(e)
+
+# 逐元素相除
+f = tf.divide(a, b)
+print(f)
+
+# 逐元素求余
+g = tf.math.mod(a, b)
+print(g)
+
+print(a - b)
+print(a * b)
+print(a / b)
+print(a + b)
+print(a % b)
+print(a // b)
+```
+
+![运行结果](./img/26.png)
+
+需要注意的是`/`运算虽然除数与被除数的元素类型都是`int32`的，但是得到的结果却是`float64`，如果想要得到的运算是整除运算可以用`//`来进行整除运算。
+
+### 幂指对数运算
+
+|算术运算|运算描述|
+|:-:|:-:|
+|`tf.pow(x,y)`|对x求y的幂次方|
+|`tf.square(x)`|对x逐个元素求二次方|
+|`tf.sqrt(x)`|对x逐元素开平方根|
+|`tf.exp(x)`|计算e的x次方|
+|`tf.math.log(x)`|计算自然对数，底数为e|
+
+```python
+a = tf.reshape(tf.range(6), shape=(2, 3))
+print(tf.pow(a, 2))
+print(a ** 2)
+print(tf.square(a))
+
+print(tf.sqrt(tf.cast(a, dtype=tf.float32)))
+print(tf.cast(a, dtype=tf.float32) ** (1 / 2))
+
+print(tf.math.log(tf.cast(a, dtype=tf.float32)))
+print(tf.exp(tf.cast(a,dtype=tf.float32)))
+```
+
+![运行结果](./img/27.png)
+
+如上所示，对张量每个元素求平方或平方根也是可以用`**`这种数学符号的，但是需要注意的是在计算自然对数与求平方根时，张量的类型需要是浮点型，使用整型会报错。
+
+由于`TensorFlow`中只有以e为底的自然对数，没有提供其它数值为底的对数运算函数，但是我们可以用数学运算中的换底公式来计算其它底数的对数，$log_a b = \frac{log_c b}{log_c a}$
+
+### 其它运算
+
+![示例图片](./img/28.png)
+
+### 三角函数与反三角函数运算
+
+![示例图片](./img/29.png)
+
+### 重载运算符
+
+![实例图片](./img/30.png)
+
+### 广播机制（broadcaing）
+
+例如，一维张量与二维向量相加时，一维向量中每个元素会与二维向量中最小的那个维度中的每个元素逐个相加。
+
+![示例图片](./img/31.png)
+
+需要注意的是两个张量最后一个维度的长度必须相等。
+
+```python
+a = tf.constant([1, 2, 3])
+b = tf.reshape(tf.range(12), shape=(4, 3))
+print(a + b)
+```
+
+![运行结果](./img/32.png)
+
+一维张量和三维张量的相加也与一维张量与二维张量相加的情况相同，都是最小维度之间各个元素相加。
+
+数字+N维张量时，这个数字也会与张量的各个元素进行相加。
+
+### 张量乘法
+
+元素乘法：`tf.multiply()`，可以用`*`运算符代替，
+
+向量乘法：`tf.matmul()`，可以用`@`运算符代替。向量乘法采用的乘法是线性代数中的矩阵之间相乘的运算。
+
+```python
+a = tf.reshape(tf.range(6), shape=(2,3))
+b = tf.reshape(tf.range(6), shape=(3,2))
+print(a@b)
+```
+
+![运行结果](./img/33.png)
 

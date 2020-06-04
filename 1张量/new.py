@@ -166,7 +166,19 @@ def math_operations2():
     print(tf.cast(a, dtype=tf.float32) ** (1 / 2))
 
     print(tf.math.log(tf.cast(a, dtype=tf.float32)))
-    print(tf.exp(tf.cast(a,dtype=tf.float32)))
+    print(tf.exp(tf.cast(a, dtype=tf.float32)))
+
+
+def tensor_broadcasting():
+    a = tf.constant([1, 2, 3])
+    b = tf.reshape(tf.range(12), shape=(4, 3))
+    print(a + b)
+
+
+def matmul_tensor():
+    a = tf.reshape(tf.range(6), shape=(2,3))
+    b = tf.reshape(tf.range(6), shape=(3,2))
+    print(a@b)
 
 
 if __name__ == '__main__':
@@ -184,4 +196,6 @@ if __name__ == '__main__':
     # unstack_tensor()
     # get_tensor_data()
     # math_operations()
-    math_operations2()
+    # math_operations2()
+    # tensor_broadcasting()
+    matmul_tensor()
