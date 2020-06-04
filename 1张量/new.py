@@ -177,8 +177,19 @@ def tensor_broadcasting():
 
 def matmul_tensor():
     a = tf.reshape(tf.range(6), shape=(2,3))
-    b = tf.reshape(tf.range(6), shape=(3,2))
-    print(a@b)
+    n=tf.concat([a,a],axis=0)
+    print(n)
+
+    # b = tf.reshape(tf.range(6), shape=(3,2))
+    # print(a@b)
+    c = tf.reshape(tf.range(12),shape=(2,2,3))
+    d = tf.reshape(tf.range(12),shape=(2,3,2))
+    print(c@d)
+
+
+def data_count():
+    a = tf.reshape(tf.range(12),shape=(2,2,3))
+    print(tf.reduce_sum(a))
 
 
 if __name__ == '__main__':
@@ -198,4 +209,5 @@ if __name__ == '__main__':
     # math_operations()
     # math_operations2()
     # tensor_broadcasting()
-    matmul_tensor()
+    # matmul_tensor()
+    data_count()
