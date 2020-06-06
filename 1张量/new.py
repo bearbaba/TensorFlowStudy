@@ -190,6 +190,7 @@ def matmul_tensor():
 def data_count():
     a = tf.reshape(tf.range(12),shape=(2,2,3))
     print(tf.reduce_sum(a))
+    print(tf.reduce_sum(a,axis=2))
 
 
 if __name__ == '__main__':

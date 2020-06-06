@@ -555,6 +555,15 @@ print(a@b)
 
 求和函数：`tf.reduce_sum()`，这个函数可以设定`axis`参数，以此来指定对某个维度进行求和，如果不设置，就会默认对所有元素进行求和运算。
 
+```python
+a = tf.reshape(tf.range(12),shape=(2,2,3))
+print(tf.reduce_sum(a))
+print(tf.reduce_sum(a,axis=2))
+```
+
+![运行结果](./img/35.png)
+
+
 与之相似的还有`tf.reduce_mean()`求均值函数，`tf.max()`求最大值函数，`tf.min()`求最小值函数，`tf.argmax()`求最大值索引，`tf.argmin()`求最小值索引。
 
 需要注意的是求均值函数在张量类型为整型时，所得到的均值张量也是整型。
