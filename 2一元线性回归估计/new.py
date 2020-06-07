@@ -35,7 +35,7 @@ class ForecastModule:
         plt.ylabel("价格（万元）", fontsize=14)
 
         plt.xlim((40, 150))
-        plt.xlim((40, 150))
+        plt.ylim((40, 150))
 
         plt.suptitle("商品房销售价格评估系统", fontsize=20)
 
