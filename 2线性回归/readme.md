@@ -54,3 +54,42 @@
 
 我们在知道参数的数学表达式之后，实际上不借助`tensorflow`也是可以根据表达式写出我们需要的程序的，但是为了体现`tensorflow`的优越性，我们依然选用`tensorflow`来解决一元线性回归问题。
 
+### 案例
+
+我们用过往面积与房价之间的关系来估计下未来的房价，显然这里的过往面积将成为参数$x_i$，过往房价则是$\hat{y_i}$。我们根据上述已给出的$w$和$b$的数学表达式，通过$x_i$与$\hat{y_i}$就能计算出$w$和$b$，
+
+```python
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+
+class ForecastModule:
+    def __init__(self, x_array, y_array):
+        self.x_array = x_array
+        self.y_array = y_array
+        self.w = 0
+        self.b = 0
+        self.x_text = None
+        self.y_text = None
+
+    def get_parameter(self):
+        x_mean = tf.reduce_mean(self.x_array)
+        y_mean = tf.reduce_mean(self.y_array)
+        self.w = tf.reduce_sum((self.x_array - x_mean) * (self.y_array - y_mean)) / tf.reduce_sum(
+            tf.square((self.x_array - x_mean)))
+        self.b = y_mean - self.w * x_mean
+        
+
+if __name__ == '__main__':
+    x = tf.constant(
+        [137.97, 104.50, 100.00, 124.32, 79.20, 99.00, 124.00, 114.00, 106.69, 138.05, 53.75, 46.91, 68.00, 63.02,
+         81.26, 86.21])
+    y = tf.constant(
+        [145.00, 110.00, 93.00, 116.00, 65.32, 104.00, 118.00, 91.00, 62.00, 133.00, 51.00, 45.00, 78.50, 69.65, 75.69,
+         95.30])
+    forecast_module = ForecastModule(x, y)
+    forecast_module.get_parameter()
+```
+
+上述代码将获取$w$和$b$的方法进行了封装，在`main`函数中将过往面积与房价的列表通过`tf.constant()`函数转换成了张量，并将这两个张量传递给了对象`forecast_module`。在`ForecastModule`类中`get_parameter(self)`函数就是用来获取$w$和$b$参数的函数，它所进行的运算实际上并不复杂。
+
