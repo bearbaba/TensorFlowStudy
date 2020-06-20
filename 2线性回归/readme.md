@@ -93,3 +93,70 @@ if __name__ == '__main__':
 
 上述代码将获取$w$和$b$的方法进行了封装，在`main`函数中将过往面积与房价的列表通过`tf.constant()`函数转换成了张量，并将这两个张量传递给了对象`forecast_module`。在`ForecastModule`类中`get_parameter(self)`函数就是用来获取$w$和$b$参数的函数，它所进行的运算实际上并不复杂。
 
+在`get_parameter(self)`函数中，`tf.reduce_mean()`函数用来计算出列表张量的平均数，其实就是用来获取$x_i$与$y_i$的。
+
+```python
+self.w = tf.reduce_sum((self.x_array - x_mean) * (self.y_array - y_mean)) / tf.reduce_sum(tf.square((self.x_array - x_mean)))
+```
+
+上述代码是`get_parameter(self)`函数中用来求取$w$参数的，它是参照下述的公式得到的。
+
+![实例图片](./img/4.png)
+
+`self.x_array-x_mean`实际是将张量`x_array`的每个值都分别去减`x_mean`，这是张量运算的广播机制，在之前的`tensorflow运算`中曾经介绍过。同样的，`(self.x_array - x_mean) * (self.y_array - y_mean)`也是基于张量的运算机制。`tf.reduce_sum`是张量的求和函数，`tf.square()`是求取张量每个值的平方值，此处不再赘述。
+
+在得到$w$的值后，$b$的值根据`self.b = y_mean - self.w * x_mean`就可轻松求解。
+
+在拥有$w$与$b$的值之后，就可根据$y=wx+b$通过输入的`x`得到预测的`y`了。
+
+## 多元线性回归
+
+在一个回归分析中包含两个或两个以上的自变量称为多元回归，对于因变量和自变量之间是线性关系的多元回归称为多元线性回归，它的模型与一元线性回归相似，为$y=w_ix_i+w_2x_2+...+w_mx_m+b$，其中参数$b$可以表示为$w_0x_0$，取$x_0=1$，用向量形式表示就是：$\hat{y}=w_0x^0+w_1x^1+...+w_mx^m=W^TX$，其中$W$是所有$w$参数组成的行向量，而$X$则是所有$x$参数组成的行向量，把行向量$W$变成列向量就是矩阵的转置，加上标$T$表示转置。
+
+那么平方和损失函数$Loss=\sum_{i=1}^n(y_i-\hat{y_i})^2$可以表示为$\sum_{i=1}^n(y_i-W^TX_i)^2$，为方便计算，最终的表达式为：$Loss=(Y-XW)^T(Y-XW)$，$Y$就是所有的$y_i$组成的向量。
+
+那么这一问题也就成为了求极值问题：参数向量$W$取何值时，$Loss$函数达到最小。
+
+这里依然使用偏导数求解，即求$\frac{\partial{Loss}}{\partial{W}}=0$时的解，进一步推导出$W=(X^TX)^{-1}X^TY$。
+
+```python
+class ForecastModule:
+    def __init__(self, x1, x2, y):
+        self.x1 = x1
+        self.x2 = x2
+        self.y = y
+        self.w = None
+
+    def get_parameter_w(self):
+        x0 = tf.ones(len(self.x1))
+        x = tf.stack((x0, self.x1, self.x2), axis=1)
+        y = tf.reshape(self.y, shape=(-1, 1))
+        xt = tf.transpose(x)
+        xtx_1 = tf.linalg.inv(tf.matmul(xt, x))
+        xtx_1xt = tf.matmul(xtx_1, xt)
+        w = tf.matmul(xtx_1xt, y)
+        w = tf.reshape(w, shape=(3,))
+        self.w = w
+
+    def get_pred_y(self, x1, x2):
+        y_pred = self.w[1] * x1 + self.w[2] * x2 + self.w[0]
+        return y_pred
+
+
+if __name__ == '__main__':
+
+    x1 = tf.constant(
+        [137.97, 104.50, 100.00, 124.32, 79.20, 99.00, 124.00, 114.00, 106.69, 138.05, 53.75, 46.91, 68.00, 63.02,
+         81.26, 86.21])
+    x2 = tf.constant([3, 2, 2, 3, 1, 2, 3, 2, 2, 3, 1, 1, 1, 1, 2, 2], dtype=tf.float32)
+    y = tf.constant(
+        [145.00, 110.00, 93.00, 116.00, 65.32, 104.00, 118.00, 91.00, 62.00, 133.00, 51.00, 45.00, 78.50, 69.65, 75.69,
+         95.30])
+    forecast_module = ForecastModule(x1, x2, y)
+    forecast_module.get_parameter_w()
+    y_pred = forecast_module.get_pred_y(x1, x2)
+```
+
+在上述`ForecastModule`类中`get_parameter_w(self)`的作用是在依据上述公式的基础上获取$W$的值。`xt = tf.transpose(x)`对应的是$W^T$，`tf.transpose(x)`的作用就是在进行转置操作。` xtx_1 = tf.linalg.inv(tf.matmul(xt, x))`这一步操作对应公式内的$(XX^T)^{-1}$，因为最终需要的`W`的列向量，那么就需要进行一个转置操作`w = tf.reshape(w, shape=(3,))`。
+
+有了列向量$W$的值，就可以通过公式获取预测的`y`值，这就对应着上述代码的`get_pred_y(self)`的操作。

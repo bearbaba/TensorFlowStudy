@@ -28,6 +28,7 @@ class ForecastModule:
     def get_parameter_w(self):
         x0 = tf.ones(len(self.x1))
         x = tf.stack((x0, self.x1, self.x2), axis=1)
+        print(x)
         y = tf.reshape(self.y, shape=(-1, 1))
         xt = tf.transpose(x)
         xtx_1 = tf.linalg.inv(tf.matmul(xt, x))
