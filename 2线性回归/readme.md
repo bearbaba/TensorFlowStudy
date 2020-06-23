@@ -160,3 +160,4 @@ if __name__ == '__main__':
 在上述`ForecastModule`类中`get_parameter_w(self)`的作用是在依据上述公式的基础上获取$W$的值。`xt = tf.transpose(x)`对应的是$W^T$，`tf.transpose(x)`的作用就是在进行转置操作。` xtx_1 = tf.linalg.inv(tf.matmul(xt, x))`这一步操作对应公式内的$(XX^T)^{-1}$，因为最终需要的`W`的列向量，那么就需要进行一个转置操作`w = tf.reshape(w, shape=(3,))`。
 
 有了列向量$W$的值，就可以通过公式获取预测的`y`值，这就对应着上述代码的`get_pred_y(self)`的操作。
+
