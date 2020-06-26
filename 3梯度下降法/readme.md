@@ -192,5 +192,143 @@ print(second_grads)
 
 机器学习的目标在于使泛化误差小，训练集用来训练模型，测试集用来测试学习器在新样本上的预测或判断能力。
 
-### Variable在一元线性回归中的应用
+### 波斯顿房价的案例（一元线性回归）
+
+#### 数据集加载
+
+首先我们需要加载数据集：
+
+```python
+import pandas as pd
+import tensorflow as tf
+
+boston_housing=tf.keras.datasets.boston_housing
+(train_x, train_y),(test_x,test_y) = boston_housing.load_data()
+
+print(train_x.shape)
+print(train_y.shape)
+
+print(test_x.shape,test_y.shape)
+```
+
+在`tf.keras.datasets`中已经封装好了相关波斯顿数据集，将其赋值给变量`boston_housing`，通过`load_data()`函数分别加载其中的训练集与测试集。我们分别输出了它们的`shape`，运行结果如下：
+
+![运行结果](./img/8.png)
+
+运行结果显示训练集均是404行，测试集均是102行，接下来对数据集进行处理。
+
+#### 数据集处理
+
+由于我们是一元线性回归，这里只取x数据集中的第五列数据（这一列其实是房间数目的数据，可以阅读网络上想过文档查找相关信息）。
+
+```python
+x_train = train_x[:, 5]
+y_train = train_y
+
+x_test = test_x[:, 5]
+y_test = test_y
+
+print(x_train.shape, y_train.shape)
+print(x_test.shape, y_test.shape)
+```
+
+这里仅涉及到张量的切片操作，再次输出它们的`shape`查看它们是否一致。
+
+#### 设置超参数
+
+设置一组较好的超参数能方便得到极值，这里简单地设置一组超参数：
+
+```python
+learn_rate = 0.04
+iter = 2000
+display_step = 200
+```
+
+这里设置了学习率`learn_rate`，迭代次数`iter`以及迭代每隔200次输出一组数据。
+
+#### 设置模型参数初始值
+
+这里只需要随机设置一组数据作为梯度下降的起点就可以了，
+
+```python
+np.random.seed(612)
+w = tf.Variable(np.random.randn())
+b = tf.Variable(np.random.randn())
+print(w.numpy())
+print(b.numpy())
+```
+
+`np.random.seed(612)`函数用于设置一个随机数种子，`np.random.randn()`函数则生成具有正态分布特征的随机数。
+
+#### 训练模型
+
+```python
+mse_train=[]
+mse_test=[]
+
+for i in range(0, iter+1):
+    with tf.GradientTape() as tape:
+        pred_train = w*x_train+b
+        loss_train = 0.5*tf.reduce_mean(tf.square(y_train-pred_train))
+
+        pred_test = w*x_test+b
+        loss_test = 0.5*tf.reduce_mean(tf.square(y_test-pred_test))
+
+    mse_train.append(loss_train)
+    mse_test.append(loss_test)
+
+    dL_dw, dL_db =tape.gradient(loss_train, [w, b])
+    w.assign_sub(learn_rate*dL_dw)
+    b.assign_sub(learn_rate*dL_db)
+
+    if i % display_step == 0:
+        print("i: {}, Train Loss: {}, Test Loss: {}".format(i, loss_train,loss_test))
+```
+
+以上是对预测模型的训练部分，`mse_train=[]`和`mse_test=[]`分别用于存储每次迭代时的损失函数。
+
+我们通过`w.assign_sub(learn_rate*dL_dw)`和`b.assign_sub(learn_rate*dL_db)`每次迭代去更新`w`与`b`的值，每次迭代时损失函数对`w`和`b`的偏导数与学习率的乘积即为每次下降的梯度，通过求损失函数对`w`和`b`的偏导这样就可以在每次迭代时自动调整下降的梯度。
+
+`pred_train`与`pred_test`都会在每次迭代时进行更新，迭代结束后的`pred_train`与`pred_test`就是最终的训练集和测试集的预测值。
+
+#### 绘图比对数据
+
+```python
+plt.figure(figsize=(15, 10))
+
+plt.subplot(2, 2, 1)
+plt.scatter(x_train, y_train, color="blue", label="data")
+plt.plot(x_train, pred_train, color="red", label="model")
+plt.legend()
+
+plt.subplot(2,2,2)
+plt.plot(mse_train, color="blue", linewidth=3, label="train loss")
+plt.plot(mse_test,color="red",linewidth=1.5,label="test loss")
+plt.legend()
+
+
+plt.subplot(2,2,3)
+plt.plot(y_train,color="blue", marker="o",label="true_price")
+plt.plot(pred_train,color="red", marker=".", label="predict")
+plt.legend()
+
+plt.subplot(2,2,4)
+plt.plot(y_test, color="blue", marker="o", label="true_price")
+plt.plot(pred_test, color="red", marker=".", label="predict")
+plt.legend()
+
+plt.show()
+```
+
+![运行结果](./img/Figure_1.png)
+
+如上所见，我们一共绘制了四张图。
+
+（从左到右，从上到下的顺序排列）第一张图是房间数量与真实房价的散点图和房间数量与预测房价模型图之间的比对，真实房价大致围绕在预测模型周围呈增长趋势。
+
+第二张图主要比对训练集预测模型与测试集预测模型的损失函数随迭代次数的变化，如果测试集与训练集的损失函数同时下降并发生变化，说明还可以继续训练；如果不是同时变化，例如在某一点训练集停止变化，而测试集依然下降甚至上升，说明可能出现了过拟合现象。
+
+第三张图主要比对训练集中真实房价与预测房价之间的差异，从图中可以看到真实房价的变化程度要比预测房价的变化幅度要大。
+
+第四张图与第三张图类似，主要比对测试集真实房价与预测房价之间的差异。可以看到无论是测试集还是训练集，它们的总体变化规律是一致的。
 
