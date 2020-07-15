@@ -32,12 +32,12 @@ model = Sequential([
     layers.Dense(10, activation=tf.nn.relu),
 ])
 
-model.build(input_shape=[None, 28*28])
+model.build(input_shape=[None, 28 * 28])
 model.summary()
 optimizer = optimizers.Adam(1e-3)
 for epoch in range(30):
     for step, (x, y) in enumerate(db):
-        x = tf.reshape(x, [-1, 28*28])
+        x = tf.reshape(x, [-1, 28 * 28])
 
         with tf.GradientTape() as tape:
             logits = model(x)
@@ -49,5 +49,24 @@ for epoch in range(30):
         grads = tape.gradient(loss_ce, model.trainable_variables)
         optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
-        if step % 100 ==0:
-            print(step,epoch,"loss:",float(loss_ce), float(loss_mse))
+        if step % 100 == 0:
+            print(step, epoch, "loss:", float(loss_ce), float(loss_mse))
+
+    total_correct = 0
+    total_num = 0
+    for x, y in db_test:
+        x = tf.reshape(x, [-1, 28 * 28])
+        logits = model(x)
+        prob = tf.nn.softmax(logits, axis=1)
+        pred = tf.argmax(prob, axis=1)
+        pred = tf.cast(pred, dtype=tf.int32)
+        print(pred)
+        print(y)
+        correct = tf.equal(pred, y)
+        correct = tf.reduce_sum(tf.cast(correct, dtype=tf.int32))
+
+        total_correct += int(correct)
+        total_num += x.shape[0]
+
+    acc = total_correct / total_num
+    print(epoch, 'test acc:', acc)
