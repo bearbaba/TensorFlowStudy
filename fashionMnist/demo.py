@@ -18,7 +18,7 @@ db = tf.data.Dataset.from_tensor_slices((x, y))
 db = db.map(preprocess).shuffle(10000).batch(batch_size)
 
 db_test = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-db_test = db.map(preprocess).batch(batch_size)
+db_test = db_test.map(preprocess).shuffle(10000).batch(batch_size)
 
 db_iter = iter(db)
 samples = next(db_iter)
