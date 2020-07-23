@@ -46,10 +46,10 @@ y_test = tf.squeeze(y_test, axis=1)
 print(x.shape, y.shape, x_test.shape, y_test.shape)
 
 train_db = tf.data.Dataset.from_tensor_slices((x, y))
-train_db = train_db.shuffle(1000).map(preprocess).batch(64)
+train_db = train_db.shuffle(1000).map(preprocess).batch(60)
 
 test_db = tf.data.Dataset.from_tensor_slices((x, y))
-test_db = test_db.shuffle(1000).map(preprocess).batch(64)
+test_db = test_db.shuffle(1000).map(preprocess).batch(60)
 
 
 def main():
@@ -67,7 +67,42 @@ def main():
 
     conv_net.build(input_shape=[None, 32, 32, 3])
     fc_net.build(input_shape=[None, 512])
+    optimizer = optimizers.Adam(lr=1e-4)
 
+    variables = conv_net.trainable_variables + fc_net.trainable_variables
+
+    for epoch in range(50):
+        for step, (x, y) in enumerate(train_db):
+            with tf.GradientTape() as tape:
+                out = conv_net(x)
+                out=tf.reshape(out, [-1, 512])
+                logits = fc_net(out)
+                y_onehot = tf.one_hot(y, depth=100)
+                loss = tf.losses.categorical_crossentropy(y_onehot, logits, from_logits=True)
+                loss = tf.reduce_mean(loss)
+            grads = tape.gradient(loss, conv_net.trainable_variables)
+            optimizer.apply_gradients(zip(grads, variables))
+            if step % 100 == 0:
+                print(epoch, step, 'loss: ', float(loss))
+
+        total_num=0
+        total_correct=0
+        for x,y in test_db:
+            out=conv_net(x)
+            out=tf.reshape(out, [-1, 512])
+            logits=fc_net(out)
+            prob=tf.nn.softmax(logits, axis=1)
+            pred=tf.argmax(prob, axis=1)
+            pred=tf.cast(pred, dtype=tf.int32)
+
+            correct=tf.cast(tf.equal(pred, y), dtype=tf.int32)
+            correct=tf.reduce_sum(correct)
+
+            total_num+=x.shape[0]
+            total_correct += int(correct)
+
+        acc=total_correct/total_num
+        print(epoch, 'acc: ', acc)
 
 if __name__ == '__main__':
     main()
